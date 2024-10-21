@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            padding: 0;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        input[type="file"], button {
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            max-width: 100%;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload an Image</h1>
+
+    <!-- Select the document type -->
+    <label for="docType">Select Document Type:</label>
+    <select id="docType">
+        <option value="DL">Driving License</option>
+        <option value="Passport">Passport</option>
+        <option value="CRBook">CR Book</option>
+        <!-- <option value="NIC">National ID Card</option> -->
+    </select>
+
+    <input type="file" id="imageInput" accept="image/*">
+    <button id="uploadButton">Upload</button>
+
+    <!-- Section to display extracted OCR details -->
+    <h2>Extracted Details:</h2>
+    <pre id="result"></pre> 
+
+    <script>
+        document.getElementById('uploadButton').addEventListener('click', () => {
+            const input = document.getElementById('imageInput');
+            const docType = document.getElementById('docType').value;
+
+            if (input.files.length === 0) {
+                alert('Please select an image to upload.');
+                return;
+            }
+
+            // Get the file from the input
+            const file = input.files[0];
+
+            // Log the file details (for debugging purposes)
+            console.log('Selected file:', file);
+
+            const formData = new FormData();
+            formData.append('image', file);  // Correctly append the image file
+            formData.append('doc_type', docType);  // The key must match 'doc_type' in FastAPI
+
+            // Log the FormData content (for debugging purposes)
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}:`, value);
+            }
+
+            fetch('http://localhost:8000/process', { // Ensure this URL matches your FastAPI server
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Backend response:', data);
+                const resultElement = document.getElementById('result');
+                if (data.extracted_info) {
+                    resultElement.textContent = JSON.stringify(data.extracted_info, null, 2);
+                } else {
+                    resultElement.textContent = 'No details extracted, please try again.';
+                }
+            })  
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').textContent = 'Error processing image.';
+            });
+        });
+    </script>
+</body>
+</html>

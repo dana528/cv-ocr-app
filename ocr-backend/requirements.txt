@@ -1,0 +1,13 @@
+Pillow==10.1.0
+pillow_heif==0.15.0
+passporteye
+paddleocr
+fuzzywuzzy
+numpy
+paddlepaddle
+opencv-python
+pytesseract
+ipython
+fastapi
+uvicorn
+python-multipart

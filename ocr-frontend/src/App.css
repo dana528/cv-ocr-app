@@ -1,0 +1,22 @@
+/* body{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+} */
+
+.App {
+  text-align: center;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  color: #1475cf;
+}
+
+h2 {
+  margin-top: 20px;
+  color: #333;
+}
